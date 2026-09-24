@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.KBlobs" parent="android:Theme.Material.NoActionBar" />
+</resources>
