@@ -4,8 +4,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -34,7 +32,10 @@ import androidx.compose.ui.unit.dp
  * @property blur Blur radius. Needs Android 12 (API 31) or later; older Android draws the layer
  *   sharp. iOS always blurs.
  * @property blendMode How the layer is composited with what is already drawn under it.
- * @property style [Fill] or a [androidx.compose.ui.graphics.drawscope.Stroke] for an outline only.
+ * @property strokeWidth 0 fills the layer. Above 0 draws only its outline, this thick, centered
+ *   on the moving outline.
+ * @property visible False skips drawing the layer. It keeps its place in the list and keeps
+ *   moving while hidden, so showing it again does not make it or the other layers jump.
  * @property seed Seed of the control points' motion. Null derives a seed from the layer's position
  *   in the list, so layers move independently without any setup.
  */
@@ -50,7 +51,8 @@ public data class BlobLayer(
     val spin: Float = 0f,
     val blur: Dp = 0.dp,
     val blendMode: BlendMode = BlendMode.SrcOver,
-    val style: DrawStyle = Fill,
+    val strokeWidth: Dp = 0.dp,
+    val visible: Boolean = true,
     val seed: Int? = null,
 ) {
     init {
@@ -58,6 +60,7 @@ public data class BlobLayer(
         require(alpha in 0f..1f) { "alpha must be in 0..1, was $alpha" }
         require(tempo >= 0f) { "tempo must not be negative, was $tempo" }
         require(blur >= 0.dp) { "blur must not be negative, was $blur" }
+        require(strokeWidth >= 0.dp) { "strokeWidth must not be negative, was $strokeWidth" }
         require(amplitude.start <= amplitude.endInclusive) {
             "amplitude must not be empty, was $amplitude"
         }

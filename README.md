@@ -15,7 +15,8 @@ along its normal and has its own settings:
 | `spin` | Degrees per second the pattern travels around the outline |
 | `blur` | Blur radius (Android 12+; iOS always) |
 | `blendMode` | How the layer composites over the ones below |
-| `style` | `Fill` or `Stroke` |
+| `strokeWidth` | 0 fills the layer; above 0 draws only its outline, this thick |
+| `visible` | Hide a layer without it or the others jumping when it comes back |
 | `seed` | Seed for the control points' motion |
 
 A layer with `amplitude = 0.dp..0.dp` is the plain shape: use one on top as a solid, still body.
@@ -67,7 +68,7 @@ Any `Shape` works: `CircleShape`, `RoundedCornerShape`, a `GenericShape`, or a M
 
 `samples/` has an Android and an iOS app. Add layers with **+**, open a layer with its chevron,
 and change its color, alpha, segments, amplitude, tempo, rotation, spin, blur, blend mode and
-style live.
+thickness live, or switch a layer off.
 
 ```
 ./gradlew :samples:androidApp:installDebug

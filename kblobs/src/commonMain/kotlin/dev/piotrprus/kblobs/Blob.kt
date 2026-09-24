@@ -17,7 +17,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.addOutline
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -92,6 +96,11 @@ public fun Blob(
                     minPx = layer.amplitude.start.toPx(),
                     maxPx = layer.amplitude.endInclusive.toPx(),
                     blurPx = layer.blur.toPx(),
+                    style = if (layer.strokeWidth.value > 0f) {
+                        Stroke(width = layer.strokeWidth.toPx(), join = StrokeJoin.Round)
+                    } else {
+                        Fill
+                    },
                     graphicsLayer = if (layer.blur.value > 0f) obtainGraphicsLayer() else null,
                 )
             }
@@ -103,6 +112,7 @@ public fun Blob(
                 if (samples == null) return@onDrawBehind
                 val swing = intensity()
                 prepared.forEachIndexed { index, p ->
+                    if (!p.layer.visible) return@forEachIndexed
                     p.buildPath(samples, clock.time(index), clock.spin(index), swing)
                     drawPrepared(p)
                 }
@@ -124,6 +134,7 @@ private class PreparedLayer(
     val minPx: Float,
     val maxPx: Float,
     val blurPx: Float,
+    val style: DrawStyle,
     val graphicsLayer: GraphicsLayer?,
 ) {
     fun buildPath(samples: OutlineSamples, time: Float, spinDegrees: Float, intensity: Float) {
@@ -151,7 +162,8 @@ private fun DrawScope.drawPrepared(p: PreparedLayer) {
     }
     // A blurred layer is drawn into its own graphics layer, grown on every side so the outward
     // swing and the blur's falloff are not clipped at the composable's bounds.
-    val pad = ceil(max(0f, max(p.maxPx, -p.minPx)) + p.blurPx * 3f).toInt()
+    val strokeHalf = (p.style as? Stroke)?.width?.div(2f) ?: 0f
+    val pad = ceil(max(0f, max(p.maxPx, -p.minPx)) + strokeHalf + p.blurPx * 3f).toInt()
     graphicsLayer.renderEffect = BlurEffect(p.blurPx, p.blurPx, TileMode.Decal)
     graphicsLayer.blendMode = layer.blendMode
     graphicsLayer.topLeft = IntOffset(-pad, -pad)
@@ -170,9 +182,9 @@ private fun DrawScope.drawLayerPath(p: PreparedLayer, blend: Boolean) {
     val blendMode = if (blend) layer.blendMode else DrawScope.DefaultBlendMode
     val brush = layer.brush
     if (brush != null) {
-        drawPath(p.path, brush, alpha = layer.alpha, style = layer.style, blendMode = blendMode)
+        drawPath(p.path, brush, alpha = layer.alpha, style = p.style, blendMode = blendMode)
     } else {
-        drawPath(p.path, layer.color, alpha = layer.alpha, style = layer.style, blendMode = blendMode)
+        drawPath(p.path, layer.color, alpha = layer.alpha, style = p.style, blendMode = blendMode)
     }
 }
 

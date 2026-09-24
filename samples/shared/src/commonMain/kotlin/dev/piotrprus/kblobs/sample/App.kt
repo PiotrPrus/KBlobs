@@ -35,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
@@ -50,6 +51,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.foundation.Canvas
@@ -57,9 +59,6 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -95,7 +94,6 @@ private val BlendModes = listOf(
 private data class LayerEntry(
     val id: Int,
     val layer: BlobLayer,
-    val stroke: Boolean = false,
     val expanded: Boolean = false,
 )
 
@@ -143,7 +141,6 @@ fun App() {
         var shapeIndex by remember { mutableIntStateOf(0) }
         var intensity by remember { mutableFloatStateOf(1f) }
         var speed by remember { mutableFloatStateOf(1f) }
-        val density = LocalDensity.current
         val listState = rememberLazyListState()
         val scope = rememberCoroutineScope()
 
@@ -174,13 +171,7 @@ fun App() {
                     contentAlignment = Alignment.Center,
                 ) {
                     Blob(
-                        layers = entries.map { entry ->
-                            if (entry.stroke) {
-                                entry.layer.copy(style = Stroke(width = with(density) { 2.dp.toPx() }))
-                            } else {
-                                entry.layer
-                            }
-                        },
+                        layers = entries.map { it.layer },
                         modifier = Modifier.size(170.dp),
                         shape = shapes[shapeIndex].second,
                         intensity = { intensity },
@@ -268,13 +259,14 @@ private fun LayerCard(
         ) {
             Box(
                 Modifier
+                    .alpha(if (layer.visible) 1f else 0.4f)
                     .size(20.dp)
                     .clip(CircleShape)
                     .background(layer.color.copy(alpha = layer.alpha.coerceAtLeast(0.15f)))
                     .border(1.dp, layer.color, CircleShape),
             )
             Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
+            Column(Modifier.weight(1f).alpha(if (layer.visible) 1f else 0.4f)) {
                 val position = when (index) {
                     0 -> " · bottom"
                     count - 1 -> " · top"
@@ -287,6 +279,8 @@ private fun LayerCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            Switch(checked = layer.visible, onCheckedChange = { update { copy(visible = it) } })
+            Spacer(Modifier.width(8.dp))
             Chevron(expanded = entry.expanded)
         }
 
@@ -356,18 +350,12 @@ private fun LayerCard(
                         )
                     }
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(
-                        selected = !entry.stroke,
-                        onClick = { onChange(entry.copy(stroke = false, layer = layer.copy(style = Fill))) },
-                        label = { Text("Fill") },
-                    )
-                    FilterChip(
-                        selected = entry.stroke,
-                        onClick = { onChange(entry.copy(stroke = true)) },
-                        label = { Text("Stroke") },
-                    )
-                }
+                LabeledSlider(
+                    label = "Thickness",
+                    value = layer.strokeWidth.value,
+                    range = 0f..24f,
+                    format = { if (it < 0.05f) "Fill" else "${it.fmt(1)} dp stroke" },
+                ) { update { copy(strokeWidth = if (it < 0.05f) 0.dp else it.dp) } }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     TextButton(onClick = { update { copy(seed = Random.nextInt()) } }) { Text("Reshuffle") }
                     TextButton(onClick = onRemove) {
