@@ -2,6 +2,17 @@
 
 Morphing blobs for Compose Multiplatform on Android and iOS.
 
+<table>
+  <tr>
+    <td align="center"><img src="docs/media/few-segments-solid.gif" width="320" alt="A solid gold blob wobbling slowly with a few segments"><br>Few segments, solid</td>
+    <td align="center"><img src="docs/media/more-segments-outlined.gif" width="320" alt="A thin red outline with many segments morphing quickly"><br>More segments, outlined</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/media/multilayer.gif" width="320" alt="Four colored outlines morphing out of phase"><br>Multiple layers</td>
+    <td align="center"><img src="docs/media/multilayer-blur.gif" width="320" alt="Several blurred colored outlines morphing together"><br>Multiple layers with blur</td>
+  </tr>
+</table>
+
 A `Blob` is a stack of layers drawn around any `Shape`. Each layer pushes the outline in and out
 along its normal and has its own settings:
 
