@@ -32,6 +32,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -45,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -141,8 +143,14 @@ fun App() {
         var shapeIndex by remember { mutableIntStateOf(0) }
         var intensity by remember { mutableFloatStateOf(1f) }
         var speed by remember { mutableFloatStateOf(1f) }
+        var showcase by remember { mutableStateOf(false) }
         val listState = rememberLazyListState()
         val scope = rememberCoroutineScope()
+
+        if (showcase) {
+            Showcase(onClose = { showcase = false })
+            return@MaterialTheme
+        }
 
         Scaffold(
             containerColor = Background,
@@ -194,6 +202,7 @@ fun App() {
                             onIntensity = { intensity = it },
                             speed = speed,
                             onSpeed = { speed = it },
+                            onShowcase = { showcase = true },
                         )
                     }
                     itemsIndexed(entries, key = { _, e -> e.id }) { index, entry ->
@@ -220,6 +229,7 @@ private fun GlobalControls(
     onIntensity: (Float) -> Unit,
     speed: Float,
     onSpeed: (Float) -> Unit,
+    onShowcase: () -> Unit,
 ) {
     Column(Modifier.padding(bottom = 8.dp)) {
         Row(
@@ -232,6 +242,9 @@ private fun GlobalControls(
         }
         LabeledSlider("Intensity", intensity, 0f..2f, format = { it.fmt(2) }, onChange = onIntensity)
         LabeledSlider("Speed", speed, 0f..4f, format = { "${it.fmt(2)}×" }, onChange = onSpeed)
+        OutlinedButton(onClick = onShowcase, modifier = Modifier.fillMaxWidth()) {
+            Text("Showcase: all four demos")
+        }
     }
 }
 
