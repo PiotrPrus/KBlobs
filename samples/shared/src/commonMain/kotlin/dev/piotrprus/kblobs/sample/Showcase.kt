@@ -52,12 +52,15 @@ private val Calm = listOf(
     ),
 )
 
-/** 2. One outline with more segments and a slow spin, still calm. */
+/**
+ * 2. One outline with many segments and a slow spin, still calm. The amplitude has to be large
+ * next to the gap between control points, or the bumps smooth out and it reads as few segments.
+ */
 private val Outlined = listOf(
     BlobLayer(
         color = Color(0xFFFF6B6B),
-        segments = 10,
-        amplitude = (-5).dp..7.dp,
+        segments = 18,
+        amplitude = (-8).dp..8.dp,
         tempo = 0.7f,
         spin = 14f,
         strokeWidth = 2.5.dp,
@@ -65,17 +68,18 @@ private val Outlined = listOf(
 )
 
 /**
- * 3. Four layers: a soft gradient fill under three outlines, each with its own color or gradient,
- * segments, rotation and spin. Screen blending brightens the outlines where they cross.
+ * 3. Four outlines, each with its own color or gradient, segments, rotation and spin. Screen
+ * blending brightens them where they cross.
  */
 private val Layered = listOf(
     BlobLayer(
         brush = Brush.linearGradient(listOf(Color(0xFFF783AC), Color(0xFFFFA94D))),
-        alpha = 0.22f,
         segments = 5,
         amplitude = (-4).dp..14.dp,
         tempo = 0.6f,
         spin = 6f,
+        strokeWidth = 3.5.dp,
+        blendMode = BlendMode.Screen,
     ),
     BlobLayer(
         color = Color(0xFF4DABF7),
@@ -100,7 +104,7 @@ private val Layered = listOf(
         blendMode = BlendMode.Screen,
     ),
     BlobLayer(
-        color = Color(0xFFFFA94D),
+        color = Color(0xFF69DB7C),
         segments = 11,
         amplitude = (-5).dp..8.dp,
         tempo = 0.9f,
@@ -111,15 +115,13 @@ private val Layered = listOf(
     ),
 )
 
-/** 4. The same four layers, blurred into a glow. The fill gets more blur than the outlines. */
-private val Blurred = Layered.mapIndexed { i, layer ->
-    layer.copy(blur = if (i == 0) 14.dp else 5.dp)
-}
+/** 4. The same four outlines, blurred into a glow. */
+private val Blurred = Layered.map { it.copy(blur = 5.dp) }
 
 private val Demos = listOf(
     "Few segments, filled" to Calm,
     "More segments, outlined" to Outlined,
-    "Four layers, gradients" to Layered,
+    "Four layers" to Layered,
     "Four layers, blurred" to Blurred,
 )
 
