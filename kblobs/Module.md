@@ -1,6 +1,6 @@
 # Module KBlobs
 
-Morphing blobs for Compose Multiplatform on Android and iOS.
+Morphing blobs for Compose Multiplatform on Android, iOS and Web.
 
 [Blob][dev.piotrprus.kblobs.Blob] draws a list of [BlobLayer][dev.piotrprus.kblobs.BlobLayer]s
 around any `Shape`. Each layer moves its outline along the outward normal, with its own color,

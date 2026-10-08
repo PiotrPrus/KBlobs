@@ -1,6 +1,8 @@
 # KBlobs
 
-Morphing blobs for Compose Multiplatform on Android and iOS.
+Morphing blobs for Compose Multiplatform on Android, iOS and Web.
+
+[API docs](https://piotrprus.github.io/KBlobs/) · [How the math works](https://piotrprus.github.io/KBlobs/demo/), an interactive explainer that runs in the browser
 
 <table>
   <tr>
@@ -24,7 +26,7 @@ along its normal and has its own settings:
 | `tempo` | Speed of the wobble |
 | `rotation` | Starting angle of the wobble pattern, so layers can be offset from each other |
 | `spin` | Degrees per second the pattern travels around the outline |
-| `blur` | Blur radius (Android 12+; iOS always) |
+| `blur` | Blur radius (Android 12+; iOS and Web always) |
 | `blendMode` | How the layer composites over the ones below |
 | `strokeWidth` | 0 fills the layer; above 0 draws only its outline, this thick |
 | `visible` | Hide a layer without it or the others jumping when it comes back |
@@ -36,7 +38,7 @@ A layer with `amplitude = 0.dp..0.dp` is the plain shape: use one on top as a so
 
 ```kotlin
 commonMain.dependencies {
-    implementation("io.github.piotrprus:kblobs:0.1.0")
+    implementation("io.github.piotrprus:kblobs:0.2.0")
 }
 ```
 
@@ -79,11 +81,12 @@ Any `Shape` works: `CircleShape`, `RoundedCornerShape`, a `GenericShape`, or a M
 
 `samples/` has an Android and an iOS app. Add layers with **+**, open a layer with its chevron,
 and change its color, alpha, segments, amplitude, tempo, rotation, spin, blur, blend mode and
-thickness live, or switch a layer off.
+thickness live, or switch a layer off. `samples/web` is the browser explainer linked above.
 
 ```
 ./gradlew :samples:androidApp:installDebug
 open samples/iosApp/iosApp.xcodeproj
+./gradlew :samples:web:wasmJsBrowserDevelopmentRun
 ```
 
 ## License

@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -27,6 +28,11 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
+
     sourceSets {
         commonMain.dependencies {
             api(libs.compose.runtime)
@@ -43,11 +49,11 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates("io.github.piotrprus", "kblobs", "0.1.0")
+    coordinates("io.github.piotrprus", "kblobs", "0.2.0")
 
     pom {
         name.set("KBlobs")
-        description.set("Compose Multiplatform morphing blobs for Android and iOS: layered, wobbling outlines around any shape, with per-layer color, alpha, blend mode, blur, segments, amplitude range, tempo and rotation.")
+        description.set("Compose Multiplatform morphing blobs for Android, iOS and Web: layered, wobbling outlines around any shape, with per-layer color, alpha, blend mode, blur, segments, amplitude range, tempo and rotation.")
         inceptionYear.set("2026")
         url.set("https://github.com/PiotrPrus/KBlobs/")
 

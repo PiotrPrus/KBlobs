@@ -19,3 +19,4 @@ include(":kblobs")
 
 include(":samples:shared")
 include(":samples:androidApp")
+include(":samples:web")

@@ -27,6 +27,11 @@ jobs:
             tasks: >-
               :kblobs:assembleAndroidMain
               :kblobs:testAndroidHostTest
+          - name: "Web (wasmJs)"
+            os: ubuntu-latest
+            tasks: >-
+              :kblobs:compileKotlinWasmJs
+              :kblobs:wasmJsBrowserTest
           - name: "iOS"
             os: macos-latest
             tasks: >-

@@ -1,11 +1,15 @@
-name: Publish API docs
+name: Publish docs and web demo
 
 on:
   push:
     branches: [ main ]
     paths:
       - 'kblobs/**'
+      - 'samples/web/**'
       - 'gradle/**'
+      - 'kotlin-js-store/**'
+      - 'settings.gradle.kts'
+      - 'build.gradle.kts'
       - 'gradle.properties'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
@@ -23,7 +27,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build Dokka HTML
+    name: Build Dokka HTML and the web demo
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,6 +47,16 @@ jobs:
 
       - name: Generate API docs
         run: ./gradlew :kblobs:dokkaGeneratePublicationHtml --no-daemon
+
+      - name: Build web demo
+        run: ./gradlew :samples:web:wasmJsBrowserDistribution --no-daemon
+
+      # One Pages site: API docs at the root, the interactive explainer under /demo/.
+      - name: Assemble site
+        run: |
+          mkdir -p kblobs/build/dokka/html/demo
+          cp -R samples/web/build/dist/wasmJs/productionExecutable/. kblobs/build/dokka/html/demo/
+          rm -f kblobs/build/dokka/html/demo/*.map
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
